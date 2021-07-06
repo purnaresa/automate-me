@@ -9,6 +9,10 @@ Globals:
   Function:
     Timeout: 5
 Resources:
+  ServerlessRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -22,9 +26,8 @@ Resources:
           Properties:
             Path: /hello
             Method: GET
-      Environment:
-        Variables:
-          PARAM1: VALUE
+            RestApiId:
+              Ref: ServerlessRestApi
   CommandFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -39,9 +42,10 @@ Resources:
           Properties:
             Path: /command
             Method: POST
-      Environment:
-        Variables:
-          PARAM1: VALUE
+            RestApiId:
+              Ref: ServerlessRestApi
+            Auth:
+              ApiKeyRequired: true
 Outputs:
   HelloWorldAPI:
     Description: API Gateway endpoint URL for Prod environment for First Function

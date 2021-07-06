@@ -11,6 +11,10 @@ Globals:
     Timeout: 5
 
 Resources:
+  ServerlessRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -24,9 +28,7 @@ Resources:
           Properties:
             Path: /hello
             Method: GET
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
+            RestApiId: !Ref ServerlessRestApi
   CommandFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -41,9 +43,9 @@ Resources:
           Properties:
             Path: /command
             Method: POST
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-        Variables:
-          PARAM1: VALUE
+            RestApiId: !Ref ServerlessRestApi
+            Auth:
+              ApiKeyRequired: true
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
