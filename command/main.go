@@ -66,13 +66,25 @@ func getSecret(target, db string) (dbConn, dbEngine string) {
 	if errUnmarshal != nil {
 		log.Println(err)
 	}
-	dbConn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
-		dbSecret.Username,
-		dbSecret.Password,
-		dbSecret.Host,
-		dbSecret.Port,
-		db)
 	dbEngine = dbSecret.Engine
+	if dbEngine == "mysql" {
+		log.Debugln("engine mysql")
+		dbConn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+			dbSecret.Username,
+			dbSecret.Password,
+			dbSecret.Host,
+			dbSecret.Port,
+			db)
+	} else if dbEngine == "postgres" {
+		log.Debugln("engine postgres")
+		dbConn = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+			dbSecret.Host,
+			dbSecret.Port,
+			dbSecret.Username,
+			dbSecret.Password,
+			db)
+	}
+
 	log.WithField("secret", dbSecret.Host).Debugln("getSecret complete")
 	return
 }
@@ -81,12 +93,14 @@ func executeStatement(dbConn, dbEngine, statement string) (err error) {
 	log.Debugln("executeStatement start")
 	db, err := sql.Open(dbEngine, dbConn)
 	if err != nil {
-		log.Println(err)
+		log.Errorln(err)
+		return
 	}
 	_, errExec := db.Exec(statement)
 	if errExec != nil {
 		err = errExec
-		log.Println(err)
+		log.Errorln(err)
+		return
 	}
 
 	log.Debugln("executeStatement complete")

@@ -13,21 +13,6 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: Prod
-  HelloWorldFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: HelloWorldFunction
-      Handler: hello-world
-      Runtime: go1.x
-      Tracing: Active
-      Events:
-        CatchAll:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: GET
-            RestApiId:
-              Ref: ServerlessRestApi
   CommandFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -47,22 +32,6 @@ Resources:
             Auth:
               ApiKeyRequired: true
 Outputs:
-  HelloWorldAPI:
-    Description: API Gateway endpoint URL for Prod environment for First Function
-    Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
-  HelloWorldFunction:
-    Description: First Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - HelloWorldFunction
-      - Arn
-  HelloWorldFunctionIamRole:
-    Description: Implicit IAM Role created for Hello World function
-    Value:
-      Fn::GetAtt:
-      - HelloWorldFunctionRole
-      - Arn
   CommandAPI:
     Description: API Gateway endpoint URL for Prod environment for Command Function
     Value:
